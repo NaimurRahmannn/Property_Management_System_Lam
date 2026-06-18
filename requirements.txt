@@ -1,0 +1,5 @@
+Django
+psycopg[binary]
+Pillow
+pandas
+python-dotenv

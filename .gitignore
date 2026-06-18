@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Django
+*.log
+local_settings.py
+
+# SQLite database
+db.sqlite3
+db.sqlite3-journal
+
+# Static files collected by collectstatic
+staticfiles/
+
+# User uploaded media (optional)
+media/
+
+# Migrations (optional - usually DO NOT ignore)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

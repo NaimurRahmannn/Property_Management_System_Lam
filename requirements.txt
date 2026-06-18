@@ -3,3 +3,6 @@ psycopg[binary]
 Pillow
 pandas
 python-dotenv
+djangorestframework
+pgvector
+django-filter

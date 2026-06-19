@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.postgres',
     'rest_framework',
     'pgvector.django',
+    'django_filters',
     'property_app'
 ]
 

@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-
+from django.contrib.gis.geos import Point
 from pgvector.django import VectorField, HnswIndex
 
 
@@ -9,6 +9,12 @@ class Location(models.Model):
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
 
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True
+    )
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True
+    )
     point = models.PointField(geography=True, srid=4326, null=True, blank=True)
 
     boundary = models.MultiPolygonField(srid=4326, null=True, blank=True)
@@ -29,6 +35,11 @@ class Location(models.Model):
                 opclasses=["vector_cosine_ops"],
             ),
         ]
+
+    def save(self, *args, **kwargs):
+        if self.latitude is not None and self.longitude is not None:
+            self.point = Point(float(self.longitude), float(self.latitude), srid=4326)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name},{self.city},{self.country}"

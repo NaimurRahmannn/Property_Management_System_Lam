@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.contrib.gis.admin import GISModelAdmin
 
-from .models import Location,Property
+from .models import Location,Property,PropertyImage
+
+class PropertyImageInline(admin.TabularInline):
+    model=PropertyImage
+    extra=1
+    fields=("image","alt_text")
 
 @admin.register(Location)
 class LocationAdmin(GISModelAdmin):
@@ -27,5 +32,14 @@ class PropertyAdmin(GISModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ("created_at", "updated_at")
     list_select_related=("location",)
+    inlines=[PropertyImageInline]
     exclude=("embedding",)
+
+@admin.register(PropertyImage)
+class PropertyImageAdmin(admin.ModelAdmin):
+    list_display=(
+        "property",
+        "created_at"
+    )
+    readonly_fields = ("created_at",)
 

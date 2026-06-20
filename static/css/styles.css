@@ -233,3 +233,41 @@ footer.site {
   background: #faf2f1;
   color: var(--brand-dark);
 }
+.results-head {
+  padding: 36px 0 8px;
+}
+.results-head h1 {
+  font-size: 28px;
+  margin: 0 0 4px;
+}
+.results-head .sub {
+  color: var(--muted);
+}
+.results-body {
+  padding: 24px 0 10px;
+}
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin: 36px 0 10px;
+}
+.pagination a,
+.pagination span {
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-weight: 600;
+  font-size: 14px;
+}
+.pagination .current {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+.pagination .disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}

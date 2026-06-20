@@ -33,8 +33,8 @@ class Location(PointSyncMixin, models.Model):
 
     embedding = VectorField(dimensions=1536, null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["name"]
@@ -88,8 +88,8 @@ class Property(PointSyncMixin, models.Model):
     point = models.PointField(geography=True, srid=4326, null=True, blank=True)
     embedding = VectorField(dimensions=1536, null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         ordering = ["-created_at"]
         verbose_name_plural="Properties"
@@ -111,7 +111,7 @@ class PropertyImage(models.Model):
     )
     image=models.ImageField(upload_to="properties/%y/%m")
     alt_text=models.CharField(max_length=255,blank=True)
-    created_at=models.DateField(auto_now_add=True)
+    created_at=models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering=["created_at"]

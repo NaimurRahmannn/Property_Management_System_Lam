@@ -27,6 +27,9 @@ staticfiles/
 # User uploaded media (optional)
 media/
 
+# Stray uploads written to repo root before MEDIA_ROOT was configured
+/properties/
+
 # Migrations (optional - usually DO NOT ignore)
 # */migrations/*
 # !*/migrations/__init__.py

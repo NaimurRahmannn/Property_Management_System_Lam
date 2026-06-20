@@ -1,0 +1,11 @@
+title,property_type,status,price,description,prop_latitude,prop_longitude,location_name,city,country,loc_latitude,loc_longitude,image_files
+King's Castle Luxury Beach Escape,villa,available,899.00,Huge private pool and spa with a 6-seater golf cart steps from the sand.,30.39350,-86.49570,"Destin, Florida",Destin,USA,30.39350,-86.49570,kings-castle-1.png
+Emerald Coast Beachfront Condo,condo,available,275.50,Top-floor condo with sweeping Gulf views and resort pool access.,30.38900,-86.47210,"Destin, Florida",Destin,USA,30.39350,-86.49570,emerald-coast-1.png
+Seaside Studio Retreat,studio,booked,140.00,Cozy studio a short walk to the harbor boardwalk and restaurants.,30.39510,-86.51230,"Destin, Florida",Destin,USA,30.39350,-86.49570,seaside-studio-1.jpg
+Mountain Pines Log Cabin,cabin,available,210.00,Secluded log cabin with a hot tub and panoramic Smoky Mountain views.,35.68720,-83.52650,"Gatlinburg, Tennessee",Gatlinburg,USA,35.71450,-83.51190,mountain-pines-1.png
+Smoky Ridge Family House,house,available,320.00,Spacious four-bed home with a game room and wraparound deck.,35.71010,-83.50880,"Gatlinburg, Tennessee",Gatlinburg,USA,35.71450,-83.51190,smoky-ridge-1.jpg
+Downtown Loft Apartment,apartment,unavailable,185.00,Industrial-chic loft in the heart of the arts district.,36.16270,-86.78160,"Nashville, Tennessee",Nashville,USA,36.16270,-86.78160,downtown-loft-1.jpg
+Music City Skyline Condo,condo,available,260.00,Modern condo with rooftop lounge overlooking downtown Nashville.,36.15890,-86.77840,"Nashville, Tennessee",Nashville,USA,36.16270,-86.78160,music-city-1.jpeg
+Lakeshore Cozy Cabin,cabin,available,175.00,Lakefront cabin with private dock and canoe included.,44.92180,-93.50190,"Minnetonka, Minnesota",Minnetonka,USA,44.91320,-93.50330,lakeshore-1.jpg
+Sunset Bay Villa,villa,booked,540.00,Waterfront villa with infinity pool and outdoor kitchen.,25.76170,-80.19180,"Miami, Florida",Miami,USA,25.76170,-80.19180,sunset-bay-1.png
+Art Deco Ocean Apartment,apartment,available,295.00,Stylish South Beach apartment one block from the ocean.,25.78060,-80.13000,"Miami, Florida",Miami,USA,25.76170,-80.19180,art-deco-1.jpg

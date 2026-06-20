@@ -3,7 +3,19 @@ from django.contrib.gis.geos import Point
 from pgvector.django import VectorField, HnswIndex
 
 
-class Location(models.Model):
+class PointSyncMixin:
+    def _sync_point(self):
+        if self.latitude is not None and self.longitude is not None:
+            self.point = Point(float(self.longitude), float(self.latitude), srid=4326)
+        else:
+            self.point = None
+
+    def save(self, *args, **kwargs):
+        self._sync_point()
+        super().save(*args, **kwargs)
+
+
+class Location(PointSyncMixin, models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     country = models.CharField(max_length=100)
@@ -36,16 +48,11 @@ class Location(models.Model):
             ),
         ]
 
-    def save(self, *args, **kwargs):
-        if self.latitude is not None and self.longitude is not None:
-            self.point = Point(float(self.longitude), float(self.latitude), srid=4326)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.name},{self.city},{self.country}"
 
 
-class Property(models.Model):
+class Property(PointSyncMixin, models.Model):
     class PropertyType(models.TextChoices):
         APARTMENT = "apartment", "Apartment"
         HOUSE = "house", "House"
@@ -95,10 +102,6 @@ class Property(models.Model):
                 opclasses=["vector_cosine_ops"],
             ),
         ]
-    def save(self, *args, **kwargs):
-        if self.latitude is not None and self.longitude is not None:
-            self.point = Point(float(self.longitude), float(self.latitude), srid=4326)
-        super().save(*args, **kwargs)
     def __str__(self):
         return f"{self.title},{self.status},{self.price}"
     

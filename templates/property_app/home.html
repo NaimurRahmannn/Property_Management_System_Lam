@@ -33,18 +33,11 @@
       {% for property in featured %}
       <article class="card">
         {% with image=property.images.first %}
-        <div
-          class="thumb"
-          {%
-          if
-          image
-          %}style="background-image:url('{{ image.image.url }}')"
-          {%
-          endif
-          %}
-        >
-          {% if not image %}No photo{% endif %}
-        </div>
+        {% if image %}
+        <div class="thumb" style="background-image:url('{{ image.image.url }}')"></div>
+        {% else %}
+        <div class="thumb">No photo</div>
+        {% endif %}
         {% endwith %}
         <div class="body">
           <span class="ptype">{{ property.get_property_type_display }}</span>

@@ -23,4 +23,7 @@ COPY . /app/
 
 EXPOSE 8000
 
+# Wait for DB, run migrations, seed data.
+ENTRYPOINT ["sh", "/app/docker/entrypoint.sh"]
+
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

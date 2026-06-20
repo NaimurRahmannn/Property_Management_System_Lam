@@ -86,12 +86,24 @@ class Command(BaseCommand):
         skipped = 0
 
         location_cache = {}
+        dry_run_location_slugs = set()
 
         for i, row in df.iterrows():
             line = i + 2
 
             try:
                 with transaction.atomic():
+                    if dry_run:
+                        if self._location_would_be_created(
+                            row,
+                            dry_run_location_slugs,
+                        ):
+                            created_locations += 1
+
+                        self._clean_property_fields(row)
+                        created_properties += 1
+                        continue
+
                     location, loc_created = self._get_or_create_location(
                         row,
                         location_cache,
@@ -99,11 +111,6 @@ class Command(BaseCommand):
 
                     if loc_created:
                         created_locations += 1
-
-                    if dry_run:
-                        self._clean_property_fields(row)
-                        created_properties += 1
-                        continue
 
                     prop = self._create_property(row, location)
                     created_properties += 1
@@ -128,28 +135,45 @@ class Command(BaseCommand):
         )
 
     def _get_or_create_location(self, row, cache):
-        name = str(row["location_name"]).strip()
+        slug, defaults = self._clean_location_fields(row)
 
-        if name in cache:
-            return cache[name], False
-
-        slug = slugify(name)
-
-        defaults = {
-            "name": name,
-            "city": str(row["city"]).strip(),
-            "country": str(row["country"]).strip(),
-            "latitude": self._to_decimal(row["loc_latitude"], "loc_latitude"),
-            "longitude": self._to_decimal(row["loc_longitude"], "loc_longitude"),
-        }
+        if slug in cache:
+            return cache[slug], False
 
         location, created = Location.objects.get_or_create(
             slug=slug,
             defaults=defaults,
         )
 
-        cache[name] = location
+        cache[slug] = location
         return location, created
+
+    def _location_would_be_created(self, row, seen_slugs):
+        slug, _ = self._clean_location_fields(row)
+
+        if slug in seen_slugs:
+            return False
+
+        seen_slugs.add(slug)
+        return not Location.objects.filter(slug=slug).exists()
+
+    def _clean_location_fields(self, row):
+        name = str(row["location_name"]).strip()
+        slug = slugify(name)
+
+        if not name:
+            raise ValueError("location_name is empty")
+
+        if not slug:
+            raise ValueError(f"location_name cannot be slugified: '{name}'")
+
+        return slug, {
+            "name": name,
+            "city": str(row["city"]).strip(),
+            "country": str(row["country"]).strip(),
+            "latitude": self._to_decimal(row["loc_latitude"], "loc_latitude"),
+            "longitude": self._to_decimal(row["loc_longitude"], "loc_longitude"),
+        }
 
     def _clean_property_fields(self, row):
         property_type = str(row["property_type"]).strip().lower()

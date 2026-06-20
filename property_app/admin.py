@@ -1,13 +1,21 @@
 from django.contrib import admin
 from django.contrib.gis.admin import GISModelAdmin
-
+from django.utils.html import format_html
 from .models import Location,Property,PropertyImage
 
 class PropertyImageInline(admin.TabularInline):
     model=PropertyImage
     extra=1
-    fields=("image","alt_text")
-
+    fields=("thumbnail","image","alt_text")
+    readonly_fields=("thumbnail",)
+    def thumbnail(self, obj):
+        if obj and obj.image:
+            return format_html(
+                '<img src="{}" style="height:60px;border-radius:4px;" />',
+                obj.image.url,
+            )
+        return "—"
+    thumbnail.short_description = "Preview"
 @admin.register(Location)
 class LocationAdmin(GISModelAdmin):
     list_display = ("name", "city", "country", "is_active", "created_at")
@@ -37,9 +45,17 @@ class PropertyAdmin(GISModelAdmin):
 
 @admin.register(PropertyImage)
 class PropertyImageAdmin(admin.ModelAdmin):
-    list_display=(
-        "property",
-        "created_at"
-    )
-    readonly_fields = ("created_at",)
+    list_display = ("thumbnail", "property", "alt_text", "created_at")
+    list_display_links = ("property",)
+    readonly_fields = ("thumbnail", "created_at")
+    search_fields = ("property__title", "alt_text")
+ 
+    def thumbnail(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="height:50px;border-radius:4px;" />',
+                obj.image.url,
+            )
+        return "—"
+    thumbnail.short_description = "Preview"
 

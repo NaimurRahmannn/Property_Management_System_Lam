@@ -1,33 +1,67 @@
-{% extends "property_app/base.html" %}
-{% load static %}
-
-{% block title %}StayFinder &middot; Featured stays{% endblock %}
-
+{% extends "property_app/base.html" %} 
+{% load static %} 
+{% block title%}StayFinder &middot; Featured stays{% endblock %} 
 {% block content %}
+<section class="hero">
+  <div class="wrap">
+    <h1>Find your next stay</h1>
+    <p>Search vacation rentals by destination.</p>
+    <div class="searchbar">
+      <form
+        action="{% url 'property_app:search' %}"
+        method="get"
+        autocomplete="off"
+      >
+        <input
+          type="text"
+          id="q"
+          name="q"
+          placeholder="Try &ldquo;Destin&rdquo; or &ldquo;Miami&rdquo;&hellip;"
+          data-autocomplete-url="{% url 'property_app:location_autocomplete' %}"
+          data-search-url="{% url 'property_app:search' %}"
+        />
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <div class="ac-list" id="ac"></div>
+    </div>
+  </div>
+</section>
 <section class="section">
   <div class="wrap">
     <h2>Featured stays</h2>
     <div class="grid">
       {% for property in featured %}
-        <article class="card">
-          {% with image=property.images.first %}
-            <div class="thumb"
-              {% if image %}style="background-image:url('{{ image.image.url }}')"{% endif %}>
-              {% if not image %}No photo{% endif %}
-            </div>
-          {% endwith %}
-          <div class="body">
-            <span class="ptype">{{ property.get_property_type_display }}</span>
-            <h3>{{ property.title }}</h3>
-            <span class="loc">{{ property.location.city }}, {{ property.location.country }}</span>
-            <span class="badge {{ property.status }}">{{ property.get_status_display }}</span>
-            <span class="price">
-              ${{ property.price }} <small>/ night</small>
-            </span>
-          </div>
-        </article>
+      <article class="card">
+        {% with image=property.images.first %}
+        <div
+          class="thumb"
+          {%
+          if
+          image
+          %}style="background-image:url('{{ image.image.url }}')"
+          {%
+          endif
+          %}
+        >
+          {% if not image %}No photo{% endif %}
+        </div>
+        {% endwith %}
+        <div class="body">
+          <span class="ptype">{{ property.get_property_type_display }}</span>
+          <h3>{{ property.title }}</h3>
+          <span class="loc"
+            >{{ property.location.city }}, {{ property.location.country }}</span
+          >
+          <span class="badge {{ property.status }}"
+            >{{ property.get_status_display }}</span
+          >
+          <span class="price">
+            ${{ property.price }} <small>/ night</small>
+          </span>
+        </div>
+      </article>
       {% empty %}
-        <p class="empty">No featured stays yet. Check back soon.</p>
+      <p class="empty">No featured stays yet. Check back soon.</p>
       {% endfor %}
     </div>
   </div>

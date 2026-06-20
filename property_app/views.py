@@ -29,3 +29,8 @@ def location_autocomplete(request):
         results = LocationAutocompleteSerializer(matches, many=True).data
     return Response({"results": results})
 
+def property_search(request):
+    q = request.GET.get("q", "")
+    slug = request.GET.get("slug", "")
+    return render(request, "property_app/search.html", {"q": q, "slug": slug})
+

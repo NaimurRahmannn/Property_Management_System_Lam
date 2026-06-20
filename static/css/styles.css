@@ -156,3 +156,80 @@ footer.site {
   text-align: center;
   padding: 40px 0;
 }
+
+.hero {
+  background: linear-gradient(135deg, #fef0ef 0%, #f7f7f5 60%);
+  padding: 72px 0 64px;
+}
+.hero h1 {
+  font-size: 40px;
+  line-height: 1.1;
+  margin: 0 0 12px;
+  letter-spacing: -1px;
+}
+.hero p {
+  color: var(--muted);
+  font-size: 18px;
+  margin: 0 0 32px;
+}
+.btn {
+  display: inline-block;
+  background: var(--brand);
+  color: #fff;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.15s;
+}
+.btn:hover {
+  background: var(--brand-dark);
+}
+.searchbar {
+  position: relative;
+  max-width: 560px;
+}
+.searchbar form {
+  display: flex;
+  gap: 10px;
+}
+.searchbar input[type="text"] {
+  flex: 1;
+  padding: 16px 18px;
+  font-size: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  outline: none;
+}
+.searchbar input[type="text"]:focus {
+  border-color: var(--brand);
+}
+.ac-list {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 96px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  z-index: 30;
+  display: none;
+}
+.ac-list.open {
+  display: block;
+}
+.ac-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.ac-item:hover,
+.ac-item.active {
+  background: #faf2f1;
+  color: var(--brand-dark);
+}

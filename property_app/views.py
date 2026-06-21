@@ -1,6 +1,5 @@
 from django.db.models import Q
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import render,get_object_or_404
 from .models import Property,Location
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -69,3 +68,15 @@ def property_search(request):
     }
     return render(request, "property_app/search.html", context)
 
+def property_detail(request, slug):
+    property_obj = get_object_or_404(
+        Property.objects.select_related("location").prefetch_related("images"),
+        slug=slug,
+        is_active=True,
+    )
+    return render(
+        request,
+        "property_app/detail.html",
+        {"property": property_obj},
+    )
+    

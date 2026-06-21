@@ -31,7 +31,7 @@ class Location(PointSyncMixin, models.Model):
 
     boundary = models.MultiPolygonField(srid=4326, null=True, blank=True)
 
-    embedding = VectorField(dimensions=1536, null=True, blank=True)
+    embedding = VectorField(dimensions=384, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -86,7 +86,7 @@ class Property(PointSyncMixin, models.Model):
     )
     price = models.DecimalField(max_digits=14, decimal_places=2)
     point = models.PointField(geography=True, srid=4326, null=True, blank=True)
-    embedding = VectorField(dimensions=1536, null=True, blank=True)
+    embedding = VectorField(dimensions=384, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

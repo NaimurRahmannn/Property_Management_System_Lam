@@ -31,7 +31,7 @@
     <h2>Featured stays</h2>
     <div class="grid">
       {% for property in featured %}
-      <article class="card">
+      <a class="card" href="{% url 'property_app:detail' property.slug %}">
         {% with image=property.images.first %}
         {% if image %}
         <div class="thumb" style="background-image:url('{{ image.image.url }}')"></div>
@@ -52,7 +52,7 @@
             ${{ property.price }} <small>/ night</small>
           </span>
         </div>
-      </article>
+      </a>
       {% empty %}
       <p class="empty">No featured stays yet. Check back soon.</p>
       {% endfor %}

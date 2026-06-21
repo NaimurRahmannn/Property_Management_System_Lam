@@ -24,7 +24,7 @@
   {% if page_obj.object_list %}
     <div class="grid">
       {% for p in page_obj %}
-        <a class="card" href="#">
+        <a class="card" href="{% url 'property_app:detail' p.slug %}">
           {% with img=p.images.first %}
             {% if img %}
               <div class="thumb" style="background-image:url('{{ img.image.url }}');"></div>

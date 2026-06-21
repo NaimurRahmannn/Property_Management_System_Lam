@@ -1,0 +1,102 @@
+{% extends "property_app/base.html" %}
+{% block title %}{{ property.title }} &middot; StayFinder{% endblock %}
+{% block content %}
+<section class="detail">
+  <div class="wrap">
+    <nav class="crumb">
+      <a href="{% url 'property_app:home' %}">Home</a>
+      <span class="sep">/</span>
+      <a href="{% url 'property_app:search' %}?slug={{ property.location.slug }}">{{ property.location.name }}</a>
+      <span class="sep">/</span>
+      <span class="current">{{ property.title }}</span>
+    </nav>
+
+    <header class="detail-head">
+      <div>
+        <h1>{{ property.title }}</h1>
+        <div class="loc">
+          {{ property.location.name }}{% if property.location.city %} &middot; {{ property.location.city }}, {{ property.location.country }}{% endif %}
+        </div>
+      </div>
+      <span class="badge {{ property.status }}">{{ property.get_status_display }}</span>
+    </header>
+
+    {% with imgs=property.images.all %}
+    <div class="gallery">
+      {% if imgs %}
+      <div class="hero-img" style="background-image:url('{{ imgs.0.image.url }}')"></div>
+      {% if imgs|length > 1 %}
+      <div class="strip">
+        {% for img in imgs|slice:"1:" %}
+        <div class="pic" style="background-image:url('{{ img.image.url }}')"></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="hero-img placeholder">No images available</div>
+      {% endif %}
+    </div>
+    {% endwith %}
+
+    <div class="layout">
+      <div class="detail-main">
+        <div class="highlights">
+          <div class="stat">
+            <span class="stat-k">Type</span>
+            <span class="stat-v">{{ property.get_property_type_display }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-k">Location</span>
+            <span class="stat-v">{{ property.location.city }}, {{ property.location.country }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-k">Status</span>
+            <span class="stat-v">{{ property.get_status_display }}</span>
+          </div>
+        </div>
+
+        <section class="block">
+          <h2>About this place</h2>
+          <p class="desc">{{ property.description|default:"No description provided." }}</p>
+        </section>
+
+        {% if property.latitude is not None and property.longitude is not None %}
+        <section class="block">
+          <h2>Where you&rsquo;ll be</h2>
+          <p class="muted">{{ property.location.name }} &middot; {{ property.location.city }}, {{ property.location.country }}</p>
+          <a class="map-link" target="_blank" rel="noopener"
+            href="https://www.openstreetmap.org/?mlat={{ property.latitude }}&mlon={{ property.longitude }}#map=15/{{ property.latitude }}/{{ property.longitude }}">
+            View on map &rarr;
+          </a>
+        </section>
+        {% endif %}
+      </div>
+
+      <aside class="panel">
+        <div class="price-big">${{ property.price }} <small>/ night</small></div>
+
+        {% if property.status == "available" %}
+        <button class="btn reserve" type="button">Reserve</button>
+        {% else %}
+        <button class="btn reserve" type="button" disabled>{{ property.get_status_display }}</button>
+        {% endif %}
+
+        <ul class="facts">
+          <li>
+            <span class="k">Type</span>
+            <span class="v">{{ property.get_property_type_display }}</span>
+          </li>
+          <li>
+            <span class="k">Status</span>
+            <span class="v"><span class="badge {{ property.status }}">{{ property.get_status_display }}</span></span>
+          </li>
+          <li>
+            <span class="k">Location</span>
+            <span class="v">{{ property.location.name }}</span>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

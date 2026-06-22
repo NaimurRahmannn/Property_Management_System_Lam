@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
+from django.contrib.postgres.fields import ArrayField
 from pgvector.django import VectorField, HnswIndex
 
 
@@ -85,6 +86,11 @@ class Property(PointSyncMixin, models.Model):
         max_length=50, choices=Status.choices, default=Status.AVAILABLE
     )
     price = models.DecimalField(max_digits=14, decimal_places=2)
+    amenities = ArrayField(
+        models.CharField(max_length=100),
+        default=list,
+        blank=True,
+    )
     point = models.PointField(geography=True, srid=4326, null=True, blank=True)
     embedding = VectorField(dimensions=384, null=True, blank=True)
     is_active = models.BooleanField(default=True)

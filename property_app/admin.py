@@ -36,7 +36,7 @@ class PropertyAdmin(GISModelAdmin):
         "is_active"
     )
     list_filter=("property_type","status","is_active")
-    search_fields=("title","description")
+    search_fields=("title","description","amenities")
     prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ("created_at", "updated_at")
     list_select_related=("location",)

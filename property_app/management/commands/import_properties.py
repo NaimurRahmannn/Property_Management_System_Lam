@@ -208,7 +208,14 @@ class Command(BaseCommand):
             "latitude": lat,
             "longitude": lng,
             "description": str(row.get("description", "") or "").strip(),
+            "amenities": self._parse_amenities(row.get("amenities")),
         }
+
+    @staticmethod
+    def _parse_amenities(raw):
+        if raw is None or (isinstance(raw, float) and pd.isna(raw)):
+            return []
+        return [name.strip() for name in str(raw).split(";") if name.strip()]
 
     def _create_property(self, row, location):
         fields = self._clean_property_fields(row)

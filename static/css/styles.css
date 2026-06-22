@@ -460,6 +460,30 @@ footer.site {
   white-space: pre-line;
 }
 
+.amenities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px 20px;
+}
+
+.amenity {
+  position: relative;
+  padding-left: 24px;
+  color: #3a3a3e;
+  line-height: 1.5;
+}
+
+.amenity::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  color: var(--accent, #2563eb);
+  font-weight: 700;
+}
+
 .muted {
   color: var(--muted);
   margin: 0 0 4px;

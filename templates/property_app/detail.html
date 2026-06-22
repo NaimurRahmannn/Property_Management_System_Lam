@@ -60,6 +60,19 @@
           <p class="desc">{{ property.description|default:"No description provided." }}</p>
         </section>
 
+        <section class="block">
+          <h2>What this place offers</h2>
+          {% if property.amenities %}
+          <ul class="amenities">
+            {% for amenity in property.amenities %}
+            <li class="amenity">{{ amenity }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="muted">No amenities listed.</p>
+          {% endif %}
+        </section>
+
         {% if property.latitude is not None and property.longitude is not None %}
         <section class="block">
           <h2>Where you&rsquo;ll be</h2>

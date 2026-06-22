@@ -7,6 +7,7 @@ from .serializers import LocationAutocompleteSerializer
 from django.core.paginator import Paginator
 from .embeddings import embed_text
 from pgvector.django import CosineDistance
+from django.contrib.gis.db.models.functions import Distance
 
 
 def home(request):
@@ -30,6 +31,7 @@ def location_autocomplete(request):
         ).order_by("name")[:10]
         results = LocationAutocompleteSerializer(matches, many=True).data
     return Response({"results": results})
+
 
 def property_search(request):
     slug = request.GET.get("slug", "").strip()
@@ -72,14 +74,21 @@ def property_search(request):
 
 def property_detail(request, slug):
     property_obj = get_object_or_404(
-        Property.objects.select_related("location").prefetch_related("images"),
+        Property.objects.select_related("location")
+        .prefetch_related("images")
+        .annotate(city_distance=Distance("point", "location__point")),
         slug=slug,
         is_active=True,
     )
+
+    distance_km = None
+    if property_obj.city_distance is not None:
+        distance_km = round(property_obj.city_distance.m / 1000, 1)
+
     return render(
         request,
         "property_app/detail.html",
-        {"property": property_obj},
+        {"property": property_obj, "distance_km": distance_km},
     )
 
 
@@ -144,4 +153,3 @@ def combined_search(request):
         "total": paginator.count,
     }
     return render(request, "property_app/combined.html", context)
-   

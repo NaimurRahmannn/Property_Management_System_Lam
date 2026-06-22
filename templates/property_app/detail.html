@@ -64,6 +64,9 @@
         <section class="block">
           <h2>Where you&rsquo;ll be</h2>
           <p class="muted">{{ property.location.name }} &middot; {{ property.location.city }}, {{ property.location.country }}</p>
+          {% if distance_km is not None %}
+          <p class="muted">{{ distance_km }} km from {{ property.location.name }} city center</p>
+          {% endif %}
           <a class="map-link" target="_blank" rel="noopener"
             href="https://www.openstreetmap.org/?mlat={{ property.latitude }}&mlon={{ property.longitude }}#map=15/{{ property.latitude }}/{{ property.longitude }}">
             View on map &rarr;
@@ -94,6 +97,12 @@
             <span class="k">Location</span>
             <span class="v">{{ property.location.name }}</span>
           </li>
+          {% if distance_km is not None %}
+          <li>
+            <span class="k">Distance from city</span>
+            <span class="v">{{ distance_km }} km</span>
+          </li>
+          {% endif %}
         </ul>
       </aside>
     </div>

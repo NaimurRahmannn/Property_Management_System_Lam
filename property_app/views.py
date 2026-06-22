@@ -5,6 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import LocationAutocompleteSerializer
 from django.core.paginator import Paginator
+from .embeddings import embed_text
+from pgvector.django import CosineDistance
 def home(request):
     featured = (
         Property.objects.filter(is_active=True)
@@ -81,3 +83,16 @@ def property_detail(request, slug):
     )
 
 
+def semantic_search(request):
+    q = request.GET.get("q", "").strip()
+    results = []
+    if q:
+        query_vector=embed_text(q)
+        results=(
+            Property.objects.filter(is_active=True, embedding__isnull=False)
+            .select_related("location")
+            .prefetch_related("images")
+            .order_by(CosineDistance("embedding",query_vector))[:12]
+        )
+    context={"query":q, "results":results}
+    return render(request, "property_app/semantic.html", context)

@@ -6,3 +6,10 @@ python-dotenv
 djangorestframework
 pgvector
 django-filter
+
+numpy<2
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
+transformers==4.41.2
+sentence-transformers==2.7.0

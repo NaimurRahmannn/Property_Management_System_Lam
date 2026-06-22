@@ -10,6 +10,8 @@ def build_property_text(prop):
         prop.description or "",
         f"{prop.get_property_type_display()} in {prop.location.name}",
     ]
+    if prop.amenities:
+        parts.append("Amenities: " + ", ".join(prop.amenities))
     return ". ".join(p for p in parts if p).strip()
 
 

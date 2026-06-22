@@ -9,6 +9,8 @@ from .embeddings import embed_text
 from pgvector.django import CosineDistance
 from django.contrib.gis.db.models.functions import Distance
 
+LOCATION_MATCH_MAX_DISTANCE = 0.70
+
 
 def home(request):
     featured = (
@@ -128,11 +130,14 @@ def combined_search(request):
         location = Location.objects.filter(slug=slug, is_active=True).first()
     elif loc_text:
         loc_vector = embed_text(loc_text)
-        location = (
+        nearest = (
             Location.objects.filter(is_active=True, embedding__isnull=False)
-            .order_by(CosineDistance("embedding", loc_vector))
+            .annotate(distance=CosineDistance("embedding", loc_vector))
+            .order_by("distance")
             .first()
         )
+        if nearest and nearest.distance <= LOCATION_MATCH_MAX_DISTANCE:
+            location = nearest
 
     properties = (
         Property.objects.filter(is_active=True)
@@ -155,6 +160,7 @@ def combined_search(request):
     context = {
         "location": location,
         "loc_text": loc_text,
+        "loc_not_found": bool(loc_text) and location is None,
         "query": q,
         "page_obj": page_obj,
         "total": paginator.count,

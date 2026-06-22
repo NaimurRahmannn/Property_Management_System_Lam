@@ -11,8 +11,13 @@
     <button class="btn" type="submit">Search</button>
   </form>
   <div class="sub" style="margin-top:10px;">
-    {% if location %}In <strong>{{ location.name }}</strong>{% endif %}
-    {% if query %}&middot; ranked by &ldquo;{{ query }}&rdquo;{% endif %}
+    {% if loc_not_found %}
+      No destination matched &ldquo;{{ loc_text }}&rdquo;
+      {% if query %}&middot; showing all stays ranked by &ldquo;{{ query }}&rdquo;{% endif %}
+    {% else %}
+      {% if location %}In <strong>{{ location.name }}</strong>{% endif %}
+      {% if query %}&middot; ranked by &ldquo;{{ query }}&rdquo;{% endif %}
+    {% endif %}
     {% if location or query %}&middot; {{ total }} result{{ total|pluralize }}{% endif %}
   </div>
 </div>

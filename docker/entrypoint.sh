@@ -11,8 +11,6 @@ echo "Database is up."
 echo "Applying migrations ..."
 python manage.py migrate --noinput
 
-# Seed property data only once: import when the table is empty so that
-# container restarts/redeploys do not create duplicate properties.
 ALREADY_SEEDED=$(python manage.py shell -c "from property_app.models import Property; print(Property.objects.exists())" | tail -n 1)
 
 if [ "$ALREADY_SEEDED" = "False" ]; then
@@ -20,6 +18,15 @@ if [ "$ALREADY_SEEDED" = "False" ]; then
     python manage.py import_properties data/vacation_rentals.csv
 else
     echo "Properties already exist - skipping import."
+fi
+EMBEDDINGS_MISSING=$(python manage.py shell -c "from property_app.models import Property, Location; print(Property.objects.filter(embedding__isnull=True).exists() or Location.objects.filter(embedding__isnull=True).exists())" | tail -n 1)
+
+if [ "$EMBEDDINGS_MISSING" = "True" ]; then
+    echo "Generating embeddings (one-time, may take a minute) ..."
+    python manage.py generate_embeddings || echo "WARNING: property embedding generation failed - semantic search may be empty"
+    python manage.py generate_location_embeddings || echo "WARNING: location embedding generation failed - semantic location search may be empty"
+else
+    echo "Embeddings already present - skipping generation."
 fi
 
 exec "$@"

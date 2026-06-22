@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 
+from property_app.embeddings import get_model
 from property_app.models import Property
 
 
@@ -23,8 +24,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from sentence_transformers import SentenceTransformer
-
         regenerate_all = options["all"]
 
         queryset = Property.objects.select_related("location")
@@ -38,8 +37,8 @@ class Command(BaseCommand):
             ))
             return
 
-        self.stdout.write(f"Loading model all-MiniLM-L6-v2 …")
-        model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.stdout.write("Loading model all-MiniLM-L6-v2 …")
+        model = get_model()
 
         texts = [build_property_text(p) for p in properties]
         self.stdout.write(f"Encoding {len(texts)} properties …")

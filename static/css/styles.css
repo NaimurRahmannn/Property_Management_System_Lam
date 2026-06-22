@@ -705,3 +705,94 @@ footer.site {
 .combo-form input:focus {
   border-color: var(--brand);
 }
+
+/* -- Mobile/responsive --- */
+@media (max-width: 640px) {
+  header.site .wrap {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .nav {
+    width: 100%;
+    gap: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .nav a {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .hero {
+    padding: 44px 0 40px;
+  }
+
+  .hero h1 {
+    font-size: 30px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero p {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .searchbar form {
+    flex-direction: column;
+  }
+
+  .searchbar .btn {
+    width: 100%;
+  }
+
+  .ac-list {
+    right: 0;
+  }
+
+  .section {
+    padding: 36px 0;
+  }
+
+  .section h2 {
+    font-size: 20px;
+  }
+
+  .results-head h1 {
+    font-size: 23px;
+  }
+
+  .detail-head h1 {
+    font-size: 25px;
+  }
+
+  .sem-form,
+  .combo-form {
+    flex-direction: column;
+  }
+
+  .sem-form .btn,
+  .combo-form .btn {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .gallery .hero-img {
+    aspect-ratio: 4/3;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}

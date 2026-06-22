@@ -79,4 +79,5 @@ def property_detail(request, slug):
         "property_app/detail.html",
         {"property": property_obj},
     )
-    
+
+

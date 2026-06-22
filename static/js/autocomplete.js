@@ -21,16 +21,20 @@
       close();
       return;
     }
-    box.innerHTML = results
-      .map((r) => `<div class="ac-item" data-slug="${r.slug}">${r.label}</div>`)
-      .join("");
-    items = Array.from(box.querySelectorAll(".ac-item"));
-    items.forEach((el) =>
-      el.addEventListener("click", () => {
-        window.location =
-          searchUrl + "?slug=" + encodeURIComponent(el.dataset.slug);
+    box.replaceChildren(
+      ...results.map((r) => {
+        const el = document.createElement("div");
+        el.className = "ac-item";
+        el.dataset.slug = r.slug;
+        el.textContent = r.label;
+        el.addEventListener("click", () => {
+          window.location =
+            searchUrl + "?slug=" + encodeURIComponent(el.dataset.slug);
+        });
+        return el;
       }),
     );
+    items = Array.from(box.querySelectorAll(".ac-item"));
     box.classList.add("open");
     active = -1;
   }

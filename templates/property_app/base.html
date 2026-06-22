@@ -24,7 +24,31 @@
     </div>
   </header>
   <main>{% block content %}{% endblock %}</main>
-  <footer class="site"><div class="wrap">StayFinder &middot; Vacation rentals demo</div></footer>
+  <footer class="site">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <a href="{% url 'property_app:home' %}" class="logo">Stay<span>Finder</span></a>
+        <p>Discover vacation rentals by destination, or search by meaning with AI-powered semantic search.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="{% url 'property_app:home' %}">Home</a>
+        <a href="{% url 'property_app:semantic' %}">Smart Search</a>
+        <a href="{% url 'property_app:location_semantic' %}">Find Destinations</a>
+        <a href="{% url 'property_app:combine' %}">Explore Stays</a>
+      </div>
+      <div class="footer-col">
+        <h4>Top destinations</h4>
+        <a href="{% url 'property_app:search' %}?q=Florida">Florida</a>
+        <a href="{% url 'property_app:search' %}?q=Colorado">Colorado</a>
+        <a href="{% url 'property_app:search' %}?q=California">California</a>
+        <a href="{% url 'property_app:search' %}?q=Tennessee">Tennessee</a>
+      </div>
+    </div>
+    <div class="wrap footer-bottom">
+      <span>&copy; {% now "Y" %} StayFinder &middot; Vacation rentals demo</span>
+    </div>
+  </footer>
   {% block scripts %}{% endblock %}
 </body>
 </html>

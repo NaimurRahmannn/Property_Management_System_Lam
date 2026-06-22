@@ -195,9 +195,70 @@ header.site .wrap {
 
 footer.site {
   color: var(--muted);
+  font-size: 14px;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  margin-top: 64px;
+  padding: 48px 0 0;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 36px;
+}
+
+.footer-brand .logo {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.footer-brand p {
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.7;
+}
+
+.footer-col h4 {
+  margin: 0 0 14px;
   font-size: 13px;
-  text-align: center;
-  padding: 40px 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.footer-col a {
+  display: block;
+  padding: 5px 0;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.footer-col a:hover {
+  color: var(--brand);
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+  padding-bottom: 28px;
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
 }
 
 .hero {

@@ -14,3 +14,7 @@ def get_model():
 def embed_text(text):
     model = get_model()
     return model.encode(text).tolist()
+
+def build_location_text(location):
+    parts = [location.name, location.city, location.country]
+    return ", ".join(p for p in parts if p).strip()

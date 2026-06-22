@@ -12,6 +12,15 @@
   <header class="site">
     <div class="wrap">
       <a href="{% url 'property_app:home' %}" class="logo">Stay<span>Finder</span></a>
+      <nav class="nav">
+        <a href="{% url 'property_app:home' %}">Home</a>
+        <a href="{% url 'property_app:semantic' %}"
+           title="Find rentals by describing your ideal stay">Smart Search</a>
+        <a href="{% url 'property_app:location_semantic' %}"
+           title="Find destinations by describing a place">Find Destinations</a>
+        <a href="{% url 'property_app:combine' %}"
+           title="Browse rentals by destination and description">Explore Stays</a>
+      </nav>
     </div>
   </header>
   <main>{% block content %}{% endblock %}</main>

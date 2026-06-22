@@ -127,14 +127,10 @@ def combined_search(request):
     if slug:
         location = Location.objects.filter(slug=slug, is_active=True).first()
     elif loc_text:
+        loc_vector = embed_text(loc_text)
         location = (
-            Location.objects.filter(
-                Q(name__icontains=loc_text)
-                | Q(city__icontains=loc_text)
-                | Q(country__icontains=loc_text),
-                is_active=True,
-            )
-            .order_by("name")
+            Location.objects.filter(is_active=True, embedding__isnull=False)
+            .order_by(CosineDistance("embedding", loc_vector))
             .first()
         )
 

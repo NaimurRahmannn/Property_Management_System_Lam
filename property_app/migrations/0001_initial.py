@@ -3,7 +3,9 @@
 import django.contrib.gis.db.models.fields
 import pgvector.django.indexes
 import pgvector.django.vector
+from django.contrib.postgres.operations import CreateExtension
 from django.db import migrations, models
+from pgvector.django import VectorExtension
 
 
 class Migration(migrations.Migration):
@@ -14,6 +16,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        CreateExtension('postgis'),
+        VectorExtension(),
         migrations.CreateModel(
             name='Location',
             fields=[

@@ -9,5 +9,6 @@ urlpatterns = [
     path("api/locations/", views.location_autocomplete, name="location_autocomplete"),
     path("search/", views.property_search, name="search"),
     path("property/<slug:slug>/", views.property_detail, name="detail"),
-    path("semantic/",views.semantic_search,name="semantic")
+    path("semantic/",views.semantic_search,name="semantic"),
+    path("combine/",views.combined_search,name="combine")
 ]

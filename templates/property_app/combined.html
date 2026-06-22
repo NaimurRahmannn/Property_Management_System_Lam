@@ -1,0 +1,70 @@
+{% extends "property_app/base.html" %}
+
+{% block title %}Explore stays &middot; StayFinder{% endblock %}
+
+{% block content %}
+<div class="wrap results-head">
+  <h1>Explore stays</h1>
+  <form action="{% url 'property_app:combine' %}" method="get" class="combo-form">
+    <input type="text" name="loc" value="{{ loc_text }}" placeholder="Where? e.g. Destin">
+    <input type="text" name="q" value="{{ query }}" placeholder="What kind? e.g. private pool, quiet, near the beach">
+    <button class="btn" type="submit">Search</button>
+  </form>
+  <div class="sub" style="margin-top:10px;">
+    {% if location %}In <strong>{{ location.name }}</strong>{% endif %}
+    {% if query %}&middot; ranked by &ldquo;{{ query }}&rdquo;{% endif %}
+    {% if location or query %}&middot; {{ total }} result{{ total|pluralize }}{% endif %}
+  </div>
+</div>
+
+<div class="wrap results-body">
+  {% if page_obj.object_list %}
+    <div class="grid">
+      {% for p in page_obj %}
+        <a class="card" href="{% url 'property_app:detail' p.slug %}">
+          {% with img=p.images.first %}
+            {% if img %}
+              <div class="thumb" style="background-image:url('{{ img.image.url }}');"></div>
+            {% else %}
+              <div class="thumb">No image</div>
+            {% endif %}
+          {% endwith %}
+          <div class="body">
+            <div class="ptype">{{ p.get_property_type_display }}</div>
+            <h3>{{ p.title }}</h3>
+            <div class="loc">{{ p.location.name }}</div>
+            <div><span class="badge {{ p.status }}">{{ p.get_status_display }}</span></div>
+            <div class="price">${{ p.price }} <small>/ night</small></div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?loc={{ loc_text|urlencode }}&q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">&larr; Prev</a>
+        {% else %}
+          <span class="disabled">&larr; Prev</span>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          {% if num == page_obj.number %}
+            <span class="current">{{ num }}</span>
+          {% else %}
+            <a href="?loc={{ loc_text|urlencode }}&q={{ query|urlencode }}&page={{ num }}">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <a href="?loc={{ loc_text|urlencode }}&q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">Next &rarr;</a>
+        {% else %}
+          <span class="disabled">Next &rarr;</span>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="empty">
+      {% if location or query %}No matching properties.{% else %}Enter a location, a description, or both.{% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

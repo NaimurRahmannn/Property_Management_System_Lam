@@ -12,6 +12,11 @@
       {{ total }} propert{{ total|pluralize:"y,ies" }} found
       {% if location.city %}&middot; {{ location.city }}, {{ location.country }}{% endif %}
     </div>
+  {% elif query and total %}
+    <h1>Stays matching &ldquo;{{ query }}&rdquo;</h1>
+    <div class="sub">
+      {{ total }} propert{{ total|pluralize:"y,ies" }} found
+    </div>
   {% else %}
     <h1>No matching location</h1>
     <div class="sub">

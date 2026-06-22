@@ -38,27 +38,24 @@ def property_search(request):
     q = request.GET.get("q", "").strip()
 
     location = None
-    properties = Property.objects.none()
+    locations = Location.objects.none()
 
     if slug:
         location = Location.objects.filter(slug=slug, is_active=True).first()
+        if location:
+            locations = Location.objects.filter(pk=location.pk)
     elif q:
-        location = (
-            Location.objects.filter(
-                Q(name__icontains=q) | Q(city__icontains=q) | Q(country__icontains=q),
-                is_active=True,
-            )
-            .order_by("name")
-            .first()
+        locations = Location.objects.filter(
+            Q(name__icontains=q) | Q(city__icontains=q) | Q(country__icontains=q),
+            is_active=True,
         )
 
-    if location:
-        properties = (
-            Property.objects.filter(location=location, is_active=True)
-            .select_related("location")
-            .prefetch_related("images")
-            .order_by("-created_at")
-        )
+    properties = (
+        Property.objects.filter(location__in=locations, is_active=True)
+        .select_related("location")
+        .prefetch_related("images")
+        .order_by("-created_at")
+    )
 
     paginator = Paginator(properties, 6)
     page_obj = paginator.get_page(request.GET.get("page"))

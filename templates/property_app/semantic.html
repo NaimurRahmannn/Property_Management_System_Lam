@@ -1,0 +1,45 @@
+{% extends "property_app/base.html" %}
+
+{% block title %}Semantic search &middot; StayFinder{% endblock %}
+
+{% block content %}
+<div class="wrap results-head">
+  <h1>Semantic search</h1>
+  <form action="{% url 'property_app:semantic' %}" method="get" class="sem-form">
+    <input type="text" name="q" value="{{ query }}"
+           placeholder="Describe your ideal stay — e.g. cozy cabin with a hot tub near mountains">
+    <button class="btn" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="wrap results-body">
+  {% if query %}
+    {% if results %}
+      <div class="grid">
+        {% for p in results %}
+          <a class="card" href="{% url 'property_app:detail' p.slug %}">
+            {% with img=p.images.first %}
+              {% if img %}
+                <div class="thumb" style="background-image:url('{{ img.image.url }}');"></div>
+              {% else %}
+                <div class="thumb">No image</div>
+              {% endif %}
+            {% endwith %}
+            <div class="body">
+              <div class="ptype">{{ p.get_property_type_display }}</div>
+              <h3>{{ p.title }}</h3>
+              <div class="loc">{{ p.location.name }}</div>
+              <div><span class="badge {{ p.status }}">{{ p.get_status_display }}</span></div>
+              <div class="price">${{ p.price }} <small>/ night</small></div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">No matches found for &ldquo;{{ query }}&rdquo;.</div>
+    {% endif %}
+  {% else %}
+    <div class="empty">Enter a description above to search by meaning.</div>
+  {% endif %}
+</div>
+{% endblock %}

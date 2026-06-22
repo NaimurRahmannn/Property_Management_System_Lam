@@ -25,10 +25,10 @@ def location_autocomplete(request):
     q = request.GET.get("q", "").strip()
     results = []
     if q:
+        query_vector = embed_text(q)
         matches = Location.objects.filter(
-            Q(name__icontains=q) | Q(city__icontains=q) | Q(country__icontains=q),
-            is_active=True,
-        ).order_by("name")[:10]
+            is_active=True, embedding__isnull=False
+        ).order_by(CosineDistance("embedding", query_vector))[:10]
         results = LocationAutocompleteSerializer(matches, many=True).data
     return Response({"results": results})
 
@@ -106,19 +106,20 @@ def semantic_search(request):
     context = {"query": q, "results": results}
     return render(request, "property_app/semantic.html", context)
 
+
 def location_semantic_search(request):
     q = request.GET.get("q", "").strip()
 
     results = []
     if q:
         query_vector = embed_text(q)
-        results = (
-            Location.objects.filter(is_active=True, embedding__isnull=False)
-            .order_by(CosineDistance("embedding", query_vector))[:12]
-        )
+        results = Location.objects.filter(
+            is_active=True, embedding__isnull=False
+        ).order_by(CosineDistance("embedding", query_vector))[:12]
 
     context = {"query": q, "results": results}
     return render(request, "property_app/location_semantic.html", context)
+
 
 def combined_search(request):
     slug = request.GET.get("slug", "").strip()

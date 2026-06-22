@@ -1,0 +1,36 @@
+{% extends "property_app/base.html" %}
+
+{% block title %}Semantic location search &middot; StayFinder{% endblock %}
+
+{% block content %}
+<div class="wrap results-head">
+  <h1>Find a destination</h1>
+  <form action="{% url 'property_app:location_semantic' %}" method="get" class="sem-form">
+    <input type="text" name="q" value="{{ query }}"
+           placeholder="Describe a place — e.g. warm beach town, mountain getaway, lively city">
+    <button class="btn" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="wrap results-body">
+  {% if query %}
+    {% if results %}
+      <div class="grid">
+        {% for loc in results %}
+          <a class="card" href="{% url 'property_app:search' %}?slug={{ loc.slug }}">
+            <div class="body">
+              <div class="ptype">Destination</div>
+              <h3>{{ loc.name }}</h3>
+              <div class="loc">{{ loc.city }}, {{ loc.country }}</div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">No destinations matched &ldquo;{{ query }}&rdquo;.</div>
+    {% endif %}
+  {% else %}
+    <div class="empty">Describe the kind of place you want to visit.</div>
+  {% endif %}
+</div>
+{% endblock %}

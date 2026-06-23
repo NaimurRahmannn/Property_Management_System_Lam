@@ -327,6 +327,20 @@ docker compose exec web python manage.py generate_location_embeddings
 
 ---
 
+---
+
+## A Note on Configuration
+This project is configured for local development. A couple of settings reflect that and would need tightening before any real deployment:
+
+DEBUG=True and ALLOWED_HOSTS = ['*'] are convenient for running locally but shouldn't be used in production.
+SECRET_KEY is read from .env; use a long, random value and never commit it.
+Settings live in a single settings.py rather than a dev/prod split.
+
+For a production setup you'd want DEBUG=False, an explicit ALLOWED_HOSTS, a proper WSGI/ASGI server behind a reverse proxy, and served static/media files.
+
+---
+
+
 ## Author
 
 **[Naimur Rahman Lam](https://github.com/NaimurRahmannn)**

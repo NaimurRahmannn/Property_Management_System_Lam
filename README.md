@@ -10,12 +10,16 @@ The project lets you browse rental properties, search by destination, view prope
 
 - [Tech Stack](#tech-stack)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Requirements](#requirements)
 - [Setup](#setup)
+- [API Endpoints](#api-endpoints)
 - [Trying the Semantic Features](#trying-the-semantic-features)
 - [Managing Data Manually](#managing-data-manually)
+- [Running Tests](#running-tests)
 - [Project Structure](#project-structure)
 - [Useful Docker Commands](#useful-docker-commands)
+- [Limitations & Future Improvements](#limitations--future-improvements)
 - [Troubleshooting](#troubleshooting)
 - [Author](#author)
 
@@ -52,6 +56,28 @@ The project lets you browse rental properties, search by destination, view prope
 - **One-command, self-seeding setup** — the Docker entrypoint waits for the database, migrates, imports sample data, and generates embeddings automatically, with guards so restarts never duplicate data or re-run the slow model load.
 - **Lean, reproducible image** — PyTorch is pinned to the CPU-only build and dependencies are version-locked, avoiding gigabytes of unused GPU libraries.
 - **Resilient startup** — embedding generation is non-fatal, so the app still launches even if the model can't be downloaded.
+
+---
+
+## Screenshots
+
+### Homepage with Search
+![Homepage](docs/home.png)
+
+### Location Search Results
+![Search results](docs/search.png)
+
+### Property Detail (images, amenities, and distance from city)
+![Property detail](docs/detail.png)
+
+### Semantic Location Search
+![Semantic location search](docs/semantic_location.png)
+
+### Property Semantic Search
+![Property semantic search](docs/property_semantic.png)
+
+### Combined Location + Semantic Search
+![Combined search](docs/combined.png)
 
 ---
 
@@ -132,6 +158,41 @@ docker compose exec web python manage.py createsuperuser
 
 ---
 
+## API Endpoints
+
+The project exposes a REST API endpoint built with **Django REST Framework**.
+
+### Location Autocomplete (Semantic)
+
+Returns up to 10 locations ranked by **semantic similarity** to the query, using vector embeddings and cosine distance.
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **URL** | `/api/locations/` |
+| **Query param** | `q` — the search text (e.g. `beach`, `mountain`) |
+
+**Example request:**
+
+```
+GET /api/locations/?q=beach
+```
+
+**Example response:**
+
+```json
+{
+  "results": [
+    { "label": "Miami, Florida", "slug": "miami-florida" },
+    { "label": "Destin, Florida", "slug": "destin-florida" }
+  ]
+}
+```
+
+An empty or missing `q` returns `{"results": []}`.
+
+---
+
 ## Trying the Semantic Features
 
 The semantic search works on *meaning*, so try descriptive queries rather than exact names:
@@ -163,6 +224,24 @@ docker compose exec web python manage.py generate_location_embeddings
 
 ---
 
+## Running Tests
+
+The project includes an automated test suite covering the spatial point-sync logic, location-based property search, and the semantic autocomplete ranking (with the embedding model mocked for fast, deterministic runs).
+
+Run the tests inside the container:
+
+```bash
+docker compose exec web python manage.py test
+```
+
+The tests verify, among other things, that:
+
+- saving a model auto-populates its PostGIS `point` from latitude/longitude,
+- slug search returns only the chosen location while text search spans all matches,
+- the autocomplete API ranks results by cosine distance and handles empty queries.
+
+---
+
 ## Project Structure
 
 ```
@@ -175,7 +254,8 @@ docker compose exec web python manage.py generate_location_embeddings
 │   ├── embeddings.py        # Shared Sentence Transformers helpers
 │   ├── admin.py             # Admin with filters and image previews
 │   ├── management/commands/ # import_properties, generate_embeddings, ...
-│   └── migrations/
+│   ├── migrations/
+│   └── tests.py             # Point-sync, search, and autocomplete tests
 ├── templates/property_app/  # HTML templates
 ├── static/                  # CSS and JS (autocomplete)
 ├── data/                    # Sample CSV and property images
@@ -199,6 +279,13 @@ docker compose down -v            # stop containers and DELETE the database
 ```
 
 Use `docker compose down -v` only when you want to wipe the database and start fresh (it will re-seed and re-generate embeddings on the next startup).
+
+---
+
+## Limitations & Future Improvements
+
+- **Image similarity search** — the schema and stack support image embeddings; a future version could add visual "find similar properties" search.
+- **Advanced spatial queries** — the PostGIS foundation enables radius search, polygon containment, and geofencing, which could power map-based browsing.
 
 ---
 
@@ -232,4 +319,4 @@ docker compose exec web python manage.py generate_location_embeddings
 
 ## Author
 
-**[Naimur Rahman](https://github.com/NaimurRahmannn)**
+**[Naimur Rahman Lam](https://github.com/NaimurRahmannn)**

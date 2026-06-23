@@ -138,7 +138,7 @@ def combined_search(request):
         )
         if nearest and nearest.distance <= LOCATION_MATCH_MAX_DISTANCE:
             location = nearest
-
+    location_requested = bool(slug or loc_text)
     properties = (
         Property.objects.filter(is_active=True)
         .select_related("location")
@@ -146,6 +146,8 @@ def combined_search(request):
     )
     if location:
         properties = properties.filter(location=location)
+    elif location_requested:
+        properties = Property.objects.none()
     if q:
         query_vector = embed_text(q)
         properties = properties.filter(embedding__isnull=False).order_by(
@@ -160,7 +162,7 @@ def combined_search(request):
     context = {
         "location": location,
         "loc_text": loc_text,
-        "loc_not_found": bool(loc_text) and location is None,
+        "loc_not_found": location_requested and location is None,
         "query": q,
         "page_obj": page_obj,
         "total": paginator.count,

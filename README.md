@@ -1,16 +1,80 @@
 # Property Management System
 
-Django property management project using PostgreSQL/PostGIS and Docker Compose.
+A vacation-rental property management platform built with **Django**, **GeoDjango / PostGIS**, and **pgvector**. It combines a traditional location-based property search with **AI semantic search** powered by Sentence Transformers, all running in Docker.
+
+The project lets you browse rental properties, search by destination, view property details with images and amenities, see each property's distance from its city center, and search destinations by *meaning* (e.g. "beach vacation" or "mountain getaway") rather than exact names.
+
+---
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Trying the Semantic Features](#trying-the-semantic-features)
+- [Managing Data Manually](#managing-data-manually)
+- [Project Structure](#project-structure)
+- [Useful Docker Commands](#useful-docker-commands)
+- [Troubleshooting](#troubleshooting)
+- [Author](#author)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Django, Django REST Framework |
+| Spatial | GeoDjango + PostGIS |
+| Vector / AI | pgvector + Sentence Transformers (`all-MiniLM-L6-v2`) |
+| Database | PostgreSQL 16 (PostGIS 3.5, pgvector 0.8) |
+| Data import | pandas |
+| Containerization | Docker + Docker Compose |
+
+---
+
+## Features
+
+- **Location-based search** — find properties by destination with pagination.
+- **Property detail pages** — image gallery, amenities, price, and **distance from the city center** (computed with PostGIS).
+- **Semantic location search** — rank destinations by meaning using vector embeddings.
+- **Semantic autocomplete API** — a DRF endpoint that suggests locations by semantic similarity.
+- **Combined search** — filter by location and rank the results semantically.
+- **Django admin** — manage data with filters and image previews.
+- **HNSW vector indexing** — fast approximate nearest-neighbor search in pgvector.
+
+### Technical Highlights
+
+- **Spatial data with GeoDjango** — `Location` and `Property` use PostGIS `geography` point fields (SRID 4326), plus a `MultiPolygonField` boundary, enabling true metric distance calculations rather than naive coordinate math.
+- **Auto-syncing coordinates** — a reusable `PointSyncMixin` keeps each model's spatial `point` in sync with its latitude/longitude on save, so data entry stays simple while spatial queries stay accurate.
+- **PostgreSQL array amenities** — property amenities are stored in a native `ArrayField`, not a separate table, keeping the schema lean.
+- **One-command, self-seeding setup** — the Docker entrypoint waits for the database, migrates, imports sample data, and generates embeddings automatically, with guards so restarts never duplicate data or re-run the slow model load.
+- **Lean, reproducible image** — PyTorch is pinned to the CPU-only build and dependencies are version-locked, avoiding gigabytes of unused GPU libraries.
+- **Resilient startup** — embedding generation is non-fatal, so the app still launches even if the model can't be downloaded.
+
+---
 
 ## Requirements
 
 - Docker Desktop
 - Docker Compose
-- At least a few GB of free disk space for Docker images and database data
+- A few GB of free disk space (the image includes PyTorch for embeddings)
+- Internet access on first run (to download the embedding model, ~90 MB)
 
-## Environment Setup
+---
 
-Create a `.env` file in the project root:
+## Setup
+
+### 1. Create a `.env` file
+
+Copy the provided example and adjust if needed:
+
+```bash
+cp .env.example .env
+```
+
+The `.env` file should contain:
 
 ```env
 SECRET_KEY=replace-this-with-a-long-random-secret-key
@@ -23,92 +87,149 @@ DB_HOST=db
 DB_PORT=5432
 ```
 
-For Docker, keep `DB_HOST=db` because `db` is the PostgreSQL service name in `docker-compose.yml`.
+Keep `DB_HOST=db` — `db` is the PostgreSQL service name in `docker-compose.yml`.
 
-## Run With Docker
+To generate a fresh secret key:
+
+```bash
+docker compose run --rm web python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+### 2. Build and start
 
 From the project root:
 
-```powershell
+```bash
 docker compose up --build -d
 ```
 
-Run database migrations:
+On the **first** startup the container automatically:
 
-```powershell
-docker compose exec web python manage.py migrate
-```
+1. Waits for PostgreSQL to be ready
+2. Applies database migrations
+3. Imports the sample properties from `data/vacation_rentals.csv`
+4. Generates semantic embeddings for properties and locations
 
-Create an admin user:
+> **First launch takes about a minute** because it downloads the embedding model and generates vectors. This happens only once — later restarts are fast and skip these steps. If embedding generation fails (for example, no internet), the app still starts, but semantic search will be empty until embeddings are generated.
 
-```powershell
+### 3. Create an admin user
+
+```bash
 docker compose exec web python manage.py createsuperuser
 ```
 
-Open the app:
+### 4. Open the app
 
-```text
-http://127.0.0.1:8000/
+| Page | URL |
+|------|-----|
+| Homepage | http://127.0.0.1:8000/ |
+| Property search | http://127.0.0.1:8000/search/ |
+| Property detail | http://127.0.0.1:8000/property/&lt;slug&gt;/ |
+| Semantic location search | http://127.0.0.1:8000/locations/semantic/ |
+| Combined search | http://127.0.0.1:8000/combine/ |
+| Autocomplete API (semantic) | http://127.0.0.1:8000/api/locations/?q=beach |
+| Django admin | http://127.0.0.1:8000/admin/ |
+
+---
+
+## Trying the Semantic Features
+
+The semantic search works on *meaning*, so try descriptive queries rather than exact names:
+
+- On the **homepage search box**, type `beach` or `mountain` — the autocomplete suggests matching destinations.
+- On **semantic location search** (`/locations/semantic/`), try `warm beach vacation`, `mountain ski getaway`, or `wine country`.
+- On **combined search** (`/combine/`), enter a location (e.g. `Aspen`) and a description (e.g. `luxury lodge with sauna`) to filter by place and rank by meaning.
+
+---
+
+## Managing Data Manually
+
+These steps run automatically on first startup, but you can also run them by hand.
+
+Import properties from CSV:
+
+```bash
+docker compose exec web python manage.py import_properties data/vacation_rentals.csv
 ```
 
-Django admin:
+Generate embeddings (only fills in missing ones, safe to re-run):
 
-```text
-http://127.0.0.1:8000/admin/
+```bash
+docker compose exec web python manage.py generate_embeddings
+docker compose exec web python manage.py generate_location_embeddings
 ```
+
+> The importer adds new properties without duplicating existing ones, and the embedding commands only process records that don't yet have an embedding.
+
+---
+
+## Project Structure
+
+```
+.
+├── config/                  # Django project settings, URLs
+├── property_app/            # Main app
+│   ├── models.py            # Location, Property, PropertyImage
+│   ├── views.py             # Search, detail, semantic, combined views
+│   ├── serializers.py       # DRF serializer for autocomplete API
+│   ├── embeddings.py        # Shared Sentence Transformers helpers
+│   ├── admin.py             # Admin with filters and image previews
+│   ├── management/commands/ # import_properties, generate_embeddings, ...
+│   └── migrations/
+├── templates/property_app/  # HTML templates
+├── static/                  # CSS and JS (autocomplete)
+├── data/                    # Sample CSV and property images
+├── docker/                  # Postgres image + entrypoint script
+├── docker-compose.yml
+├── Dockerfile
+└── requirements.txt
+```
+
+---
 
 ## Useful Docker Commands
 
-View running containers:
-
-```powershell
-docker compose ps
+```bash
+docker compose ps                 # list running containers
+docker compose logs -f web        # follow Django logs
+docker compose logs -f db         # follow database logs
+docker compose restart web        # restart the Django container
+docker compose down               # stop containers (keeps data)
+docker compose down -v            # stop containers and DELETE the database
 ```
 
-View web logs:
+Use `docker compose down -v` only when you want to wipe the database and start fresh (it will re-seed and re-generate embeddings on the next startup).
 
-```powershell
-docker compose logs -f web
-```
-
-View database logs:
-
-```powershell
-docker compose logs -f db
-```
-
-Restart the Django container:
-
-```powershell
-docker compose restart web
-```
-
-Stop containers:
-
-```powershell
-docker compose down
-```
-
-Stop containers and remove the database volume:
-
-```powershell
-docker compose down -v
-```
-
-Use `docker compose down -v` only when you want to delete the local database data.
+---
 
 ## Troubleshooting
 
-If `http://127.0.0.1:8000/` shows `ERR_EMPTY_RESPONSE`, the web container may have started before PostgreSQL finished initializing. Restart the web container:
+**Page shows `ERR_EMPTY_RESPONSE`** — the web container may have started before PostgreSQL finished initializing. Restart it:
 
-```powershell
+```bash
 docker compose restart web
 ```
 
-Then check the logs:
+**Semantic search returns no results** — embeddings may not have been generated (e.g. the first-run download failed). Generate them manually:
 
-```powershell
-docker compose logs -f web
+```bash
+docker compose exec web python manage.py generate_embeddings
+docker compose exec web python manage.py generate_location_embeddings
 ```
 
-If Docker build fails during `apt-get` or `dpkg`, make sure Docker Desktop is running and your system drive has enough free space.
+**Build fails during `apt-get` / `dpkg`** — ensure Docker Desktop is running and your drive has enough free space.
+
+**Duplicate properties appear** — the import was run multiple times on an already-seeded database. Clear and re-import:
+
+```bash
+docker compose exec web python manage.py shell -c "from property_app.models import Property, PropertyImage, Location; PropertyImage.objects.all().delete(); Property.objects.all().delete(); Location.objects.all().delete()"
+docker compose exec web python manage.py import_properties data/vacation_rentals.csv
+docker compose exec web python manage.py generate_embeddings
+docker compose exec web python manage.py generate_location_embeddings
+```
+
+---
+
+## Author
+
+**[Naimur Rahman](https://github.com/NaimurRahmannn)**

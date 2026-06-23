@@ -77,7 +77,7 @@ The project lets you browse rental properties, search by destination, view prope
 ![Property semantic search](docs/property_semantic.png)
 
 ### Combined Location + Semantic Search
-![Combined search](docs/combined.png)
+![Combined search](docs/combine.png)
 
 ---
 
